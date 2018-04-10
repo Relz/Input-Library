@@ -1,6 +1,10 @@
 #ifndef INPUTLIBRARY_READVECTORMETHOD_H
 #define INPUTLIBRARY_READVECTORMETHOD_H
 
-enum class ReadVectorMethod;
+enum class ReadVectorMethod
+{
+	PUSH_BACK,
+	PUSH_FRONT
+};
 
 #endif

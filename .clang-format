@@ -1,0 +1,103 @@
+---
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: DontAlign
+AlignOperands: false
+AlignTrailingComments: false
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: true
+BinPackArguments: false
+BinPackParameters: false
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+BreakAfterJavaFieldAnnotations: true
+BreakBeforeBinaryOperators: All
+BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: true
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: BeforeComma
+BreakStringLiterals: true
+ColumnLimit: 120
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: false
+DerivePointerAlignment: false
+DisableFormat: false
+FixNamespaceComments: false
+ForEachMacros: [ foreach, Q_FOREACH, BOOST_FOREACH ]
+IncludeCategories:
+  - Regex: '^"(stdafx|PrecompiledHeader)'
+    Priority: -2
+  - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority: 4
+  - Regex: '^(<|"(gtest|isl|json)/)'
+    Priority: 3
+  - Regex: '.*'
+    Priority: 2
+# IncludeBlocks: Merge
+IndentCaseLabels: true
+# IndentPPDirectives: AfterHash
+IndentWidth: 4
+IndentWrappedFunctionNames: true
+JavaScriptQuotes: Double
+JavaScriptWrapImports: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+Language: Cpp
+MacroBlockBegin: 'BEGIN_MSG_MAP$|BEGIN_SINK_MAP$|BEGIN_MESSAGE_MAP$|BOOST_FIXTURE_TEST_SUITE$|BOOST_AUTO_TEST_SUITE$|BEGIN_DLGRESIZE_MAP$|BEGIN_MSG_MAP_EX$|BEGIN_DDX_MAP$|BEGIN_COM_MAP$|BEGIN_CONNECTION_POINT_MAP$|WTL_BEGIN_LAYOUT_MAP$|WTL_BEGIN_LAYOUT_CONTAINER$'
+MacroBlockEnd: 'END_MSG_MAP$|END_SINK_MAP$|END_MESSAGE_MAP$|BOOST_AUTO_TEST_SUITE_END$|END_DLGRESIZE_MAP$|END_DDX_MAP$|END_COM_MAP$|END_CONNECTION_POINT_MAP$|WTL_END_LAYOUT_MAP$|WTL_END_LAYOUT_CONTAINER$'
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+ObjCBlockIndentWidth: 4
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: false
+PenaltyBreakAssignment: 2
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 10000000
+PointerAlignment: Middle
+ReflowComments: false
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+# SpaceBeforeCtorInitializerColon: false
+# SpaceBeforeInheritanceColon: false
+SpaceBeforeParens: ControlStatements
+# SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+TabWidth: 4
+UseTab: Always
+...
