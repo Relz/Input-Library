@@ -1,6 +1,6 @@
 #include "BaseSettings.h"
 
-BaseSettings & BaseSettings::operator=(BaseSettings const & right)
+BaseSettings & BaseSettings::operator=(BaseSettings const & right) noexcept
 {
 	if (this == &right)
 	{
@@ -13,7 +13,7 @@ BaseSettings & BaseSettings::operator=(BaseSettings const & right)
 	return *this;
 }
 
-BaseSettings & BaseSettings::operator=(BaseSettings && right)
+BaseSettings & BaseSettings::operator=(BaseSettings && right) noexcept
 {
 	if (this == &right)
 	{
