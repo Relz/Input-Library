@@ -1,5 +1,5 @@
-#ifndef PROJECT_STREAMSTRING_H
-#define PROJECT_STREAMSTRING_H
+#ifndef INPUTLIBRARY_STREAMSTRING_H
+#define INPUTLIBRARY_STREAMSTRING_H
 
 #include "StreamPosition/StreamPosition.h"
 #include <string>
@@ -13,4 +13,4 @@ public:
 	StreamPosition position;
 };
 
-#endif //PROJECT_STREAMSTRING_H
+#endif

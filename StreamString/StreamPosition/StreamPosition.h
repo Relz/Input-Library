@@ -1,3 +1,6 @@
+#ifndef INPUTLIBRARY_STREAMPOSITION_H
+#define INPUTLIBRARY_STREAMPOSITION_H
+
 class StreamPosition
 {
 public:
@@ -24,3 +27,5 @@ private:
 	void SafeSetLine(long value);
 	void SafeSetColumn(long value);
 };
+
+#endif
