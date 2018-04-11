@@ -9,7 +9,7 @@ ADD_SUBDIRECTORY(BaseSettings)
 ADD_SUBDIRECTORY(InputLibraryConstant)
 ADD_SUBDIRECTORY(MatrixSettings)
 ADD_SUBDIRECTORY(ReadVectorMethod)
-ADD_SUBDIRECTORY(StreamString)
+ADD_SUBDIRECTORY(StreamStringLibrary)
 ADD_SUBDIRECTORY(VectorSettings)
 
 TARGET_LINK_LIBRARIES(InputLibrary
@@ -17,5 +17,5 @@ TARGET_LINK_LIBRARIES(InputLibrary
 	InputLibraryConstant
 	MatrixSettings
 	ReadVectorMethod
-	StreamString
+	StreamStringLibrary
 	VectorSettings)

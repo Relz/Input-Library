@@ -4,7 +4,7 @@
 #include "BaseSettings/BaseSettings.h"
 #include "MatrixSettings/MatrixSettings.h"
 #include "ReadVectorMethod/ReadVectorMethod.h"
-#include "StreamString/StreamString.h"
+#include "StreamStringLibrary/StreamString.h"
 #include "VectorSettings/VectorSettings.h"
 #include <fstream>
 #include <functional>

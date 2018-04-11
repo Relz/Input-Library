@@ -1,0 +1,3 @@
+[submodule "StreamStringLibrary"]
+	path = StreamStringLibrary
+	url = https://github.com/Relz/StreamStringLibrary.git
