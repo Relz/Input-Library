@@ -3,19 +3,22 @@ PROJECT(InputLibrary)
 
 SET(CMAKE_CXX_STANDARD 17)
 
-ADD_LIBRARY(InputLibrary SHARED Input.cpp Input.h)
+SET(SOURCE_FILES
+	BaseSettings/BaseSettings.cpp
+	BaseSettings/BaseSettings.h
+	Constant/Constant.cpp
+	Constant/Constant.h
+	MatrixSettings/MatrixSettings.cpp
+	MatrixSettings/MatrixSettings.h
+	ReadVectorMethod/ReadVectorMethod.cpp
+	ReadVectorMethod/ReadVectorMethod.h
+	Input.cpp
+	Input.h
+	VectorSettings/VectorSettings.cpp
+	VectorSettings/VectorSettings.h)
 
-ADD_SUBDIRECTORY(BaseSettings)
-ADD_SUBDIRECTORY(InputLibraryConstant)
-ADD_SUBDIRECTORY(MatrixSettings)
-ADD_SUBDIRECTORY(ReadVectorMethod)
+ADD_LIBRARY(InputLibrary SHARED ${SOURCE_FILES})
+
 ADD_SUBDIRECTORY(StreamStringLibrary)
-ADD_SUBDIRECTORY(VectorSettings)
 
-TARGET_LINK_LIBRARIES(InputLibrary
-	BaseSettings
-	InputLibraryConstant
-	MatrixSettings
-	ReadVectorMethod
-	StreamStringLibrary
-	VectorSettings)
+TARGET_LINK_LIBRARIES(InputLibrary StreamStringLibrary)

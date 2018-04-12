@@ -329,12 +329,12 @@ private:
 	bool VectorPush(
 		std::vector<bool> & vect, char const elem, VectorSettings<bool> const & settings = VectorSettings<bool>())
 	{
-		if (settings.GetTrueChar() == InputLibraryConstant::NOT_A_CHARACTER && settings.GetRules().empty())
+		if (settings.GetTrueChar() == Constant::NOT_A_CHARACTER && settings.GetRules().empty())
 		{
 			throw(std::invalid_argument("True char and rules are not specified"));
 		}
 		bool elemToPush;
-		if (settings.GetTrueChar() != InputLibraryConstant::NOT_A_CHARACTER)
+		if (settings.GetTrueChar() != Constant::NOT_A_CHARACTER)
 		{
 			elemToPush = elem == settings.GetTrueChar();
 		}

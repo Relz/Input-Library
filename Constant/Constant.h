@@ -1,7 +1,7 @@
 #ifndef INPUTLIBRARY_CONSTANT_H
 #define INPUTLIBRARY_CONSTANT_H
 
-class InputLibraryConstant
+class Constant
 {
 public:
 	static const char NOT_A_CHARACTER;

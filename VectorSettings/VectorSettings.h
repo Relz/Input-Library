@@ -2,7 +2,7 @@
 #define INPUTLIBRARY_VECTORSETTINGS_H
 
 #include "../BaseSettings/BaseSettings.h"
-#include "../InputLibraryConstant/InputLibraryConstant.h"
+#include "../Constant/Constant.h"
 #include <unordered_map>
 
 template<typename T>
@@ -33,7 +33,7 @@ public:
 
 private:
 	BaseSettings m_baseSettings;
-	char m_trueChar = InputLibraryConstant::NOT_A_CHARACTER;
+	char m_trueChar = Constant::NOT_A_CHARACTER;
 	std::unordered_map<char, T> m_rules;
 };
 
