@@ -6,8 +6,8 @@ SET(CMAKE_CXX_STANDARD 17)
 SET(SOURCE_FILES
 	BaseSettings/BaseSettings.cpp
 	BaseSettings/BaseSettings.h
-	Constant/Constant.cpp
-	Constant/Constant.h
+	InputLibraryConstant/InputLibraryConstant.cpp
+	InputLibraryConstant/InputLibraryConstant.h
 	MatrixSettings/MatrixSettings.cpp
 	MatrixSettings/MatrixSettings.h
 	ReadVectorMethod/ReadVectorMethod.cpp
