@@ -123,7 +123,8 @@ public:
 		VectorSettings<TVectorElement, TReadElement> const & settings = VectorSettings<TVectorElement, TReadElement>())
 	{
 		std::unordered_set<char> const & stopCharacters = settings.GetBaseSettings().GetStopCharacters();
-		if (stopCharacters.find(GetNextCharacter()) != stopCharacters.end())
+		char nextCharacter;
+		if (GetNextCharacter(nextCharacter) && stopCharacters.find(nextCharacter) != stopCharacters.end())
 		{
 			return false;
 		}
@@ -132,7 +133,8 @@ public:
 		bool result = false;
 		TReadElement elem;
 		while (possibleVect.size() != settings.GetBaseSettings().GetReadLimit()
-			&& stopCharacters.find(GetNextCharacter()) == stopCharacters.end()
+			&& GetNextCharacter(nextCharacter)
+			&& stopCharacters.find(nextCharacter) == stopCharacters.end()
 			&& ReadArgumentFromStream(elem))
 		{
 			if (!VectorPush(possibleVect, elem, settings))
@@ -257,9 +259,14 @@ public:
 		return m_is.peek() == ENDL_SYMBOL_CODE_CR || m_is.peek() == ENDL_SYMBOL_CODE_LF;
 	}
 
-	char GetNextCharacter() const
+	bool GetNextCharacter(char & result) const
 	{
-		return std::char_traits<char>::to_char_type(m_is.peek());
+		if (IsEndOfStream())
+		{
+			return false;
+		}
+		result = std::char_traits<char>::to_char_type(m_is.peek());
+		return true;
 	}
 
 private:
@@ -390,8 +397,8 @@ private:
 		{
 			return false;
 		}
-		char nextCharacter = GetNextCharacter();
-		if (delimiters.find(nextCharacter) == delimiters.end())
+		char nextCharacter;
+		if (!GetNextCharacter(nextCharacter) || delimiters.find(nextCharacter) == delimiters.end())
 		{
 			return false;
 		}
