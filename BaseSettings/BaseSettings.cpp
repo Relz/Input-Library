@@ -10,6 +10,7 @@ BaseSettings & BaseSettings::operator=(BaseSettings const & right) noexcept
 	m_stopCharacters = right.m_stopCharacters;
 	m_readMethod = right.m_readMethod;
 	m_readLimit = right.m_readLimit;
+	m_readEndOfLine = right.m_readEndOfLine;
 	return *this;
 }
 
@@ -23,15 +24,16 @@ BaseSettings & BaseSettings::operator=(BaseSettings && right) noexcept
 	m_stopCharacters = std::move(right.m_stopCharacters);
 	m_readMethod = right.m_readMethod;
 	m_readLimit = right.m_readLimit;
+	m_readEndOfLine = right.m_readEndOfLine;
 	return *this;
 }
 
-std::unordered_set<char> const & BaseSettings::GetSkipCharacters() const
+std::unordered_set<wchar_t> const & BaseSettings::GetSkipCharacters() const
 {
 	return m_skipCharacters;
 }
 
-std::unordered_set<char> const & BaseSettings::GetStopCharacters() const
+std::unordered_set<wchar_t> const & BaseSettings::GetStopCharacters() const
 {
 	return m_stopCharacters;
 }
@@ -46,13 +48,18 @@ size_t BaseSettings::GetReadLimit() const
 	return m_readLimit;
 }
 
-BaseSettingsBuilder & BaseSettingsBuilder::SetSkipCharacters(std::unordered_set<char> skipCharacters)
+bool BaseSettings::GetReadEndOfLine() const
+{
+	return m_readEndOfLine;
+}
+
+BaseSettingsBuilder & BaseSettingsBuilder::SetSkipCharacters(std::unordered_set<wchar_t> skipCharacters)
 {
 	m_baseSettings.m_skipCharacters = std::move(skipCharacters);
 	return *this;
 }
 
-BaseSettingsBuilder & BaseSettingsBuilder::SetStopCharacters(std::unordered_set<char> stopCharacters)
+BaseSettingsBuilder & BaseSettingsBuilder::SetStopCharacters(std::unordered_set<wchar_t> stopCharacters)
 {
 	m_baseSettings.m_stopCharacters = std::move(stopCharacters);
 	return *this;
@@ -67,6 +74,12 @@ BaseSettingsBuilder & BaseSettingsBuilder::SetReadMethod(ReadVectorMethod readMe
 BaseSettingsBuilder & BaseSettingsBuilder::SetReadLimit(size_t readLimit)
 {
 	m_baseSettings.m_readLimit = readLimit;
+	return *this;
+}
+
+BaseSettingsBuilder & BaseSettingsBuilder::SetReadEndOfLine(bool readEndOfLine)
+{
+	m_baseSettings.m_readEndOfLine = readEndOfLine;
 	return *this;
 }
 

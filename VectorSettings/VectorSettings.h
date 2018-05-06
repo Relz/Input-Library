@@ -38,7 +38,7 @@ public:
 private:
 	BaseSettings m_baseSettings;
 	std::unordered_map<TReadElement, TVectorElement> m_rules;
-	bool m_stopIfNoRule;
+	bool m_stopIfNoRule = true;
 	TVectorElement m_defaultElement;
 };
 
@@ -48,7 +48,10 @@ class VectorSettingsBuilder
 public:
 	VectorSettingsBuilder() = default;
 
-	VectorSettingsBuilder & SetRules(std::unordered_map<TReadElement, TVectorElement> rules, bool stopIfNoRule = true, TVectorElement const & defaultElement = TVectorElement())
+	VectorSettingsBuilder & SetRules(
+		std::unordered_map<TReadElement,TVectorElement> rules,
+		bool stopIfNoRule = true,
+		TVectorElement const & defaultElement = TVectorElement())
 	{
 		m_vectorSettings.m_rules = std::move(rules);
 		m_vectorSettings.m_stopIfNoRule = stopIfNoRule;
