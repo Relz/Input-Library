@@ -18,7 +18,7 @@
 class Input
 {
 public:
-	explicit Input(std::wistream & is)
+	explicit Input(std::istream & is)
 		: m_is(is)
 	{
 		if (IsEndOfStream())
@@ -53,19 +53,19 @@ public:
 		return m_position;
 	}
 
-	bool GetNextCharacter(wchar_t & nextCharacter) const
+	bool GetNextCharacter(char & nextCharacter) const
 	{
 		if (IsEndOfStream())
 		{
 			return false;
 		}
-		nextCharacter = std::char_traits<wchar_t>::to_char_type(m_is.peek());
+		nextCharacter = std::char_traits<char>::to_char_type(m_is.peek());
 		return true;
 	}
 
 	bool IsEndOfStream() const
 	{
-		return m_is.peek() == std::wifstream::traits_type::eof();
+		return m_is.peek() == std::ifstream::traits_type::eof();
 	}
 
 	bool IsEndOfLine() const
@@ -116,7 +116,7 @@ public:
 		return true;
 	}
 
-	bool SkipCharacters(std::unordered_set<wchar_t> const & characters)
+	bool SkipCharacters(std::unordered_set<char> const & characters)
 	{
 		bool result = false;
 		while (FindDelimiter(characters))
@@ -127,7 +127,7 @@ public:
 		return result;
 	}
 
-	bool SkipUntilCharacters(std::unordered_set<wchar_t> const & characters)
+	bool SkipUntilCharacters(std::unordered_set<char> const & characters)
 	{
 		while (!FindDelimiter(characters) && ReadChar(true))
 		{
@@ -135,7 +135,7 @@ public:
 		return !IsEndOfStream();
 	}
 
-	bool SkipUntilStrings(std::vector<std::wstring> const & strings)
+	bool SkipUntilStrings(std::vector<std::string> const & strings)
 	{
 		while (!FindDelimiter(strings) && ReadChar(true))
 		{
@@ -143,7 +143,7 @@ public:
 		return !IsEndOfStream();
 	}
 
-	bool ReadLine(std::wstring & line, bool doAppend = false)
+	bool ReadLine(std::string & line, bool doAppend = false)
 	{
 		if (!doAppend)
 		{
@@ -162,7 +162,7 @@ public:
 	}
 
 	bool ReadUntilCharacters(
-		std::unordered_set<wchar_t> const & characters, std::wstring & readString, bool doAppend = false)
+		std::unordered_set<char> const & characters, std::string & readString, bool doAppend = false)
 	{
 		if (!doAppend)
 		{
@@ -174,7 +174,7 @@ public:
 		return !IsEndOfStream();
 	}
 
-	bool ReadUntilStrings(std::vector<std::wstring> const & strings, std::wstring & readString, bool doAppend = false)
+	bool ReadUntilStrings(std::vector<std::string> const & strings, std::string & readString, bool doAppend = false)
 	{
 		if (!doAppend)
 		{
@@ -197,8 +197,8 @@ public:
 		}
 
 		BaseSettings const & baseSettings = settings.GetBaseSettings();
-		std::unordered_set<wchar_t> const & stopCharacters = baseSettings.GetStopCharacters();
-		std::unordered_set<wchar_t> const & skipCharacters = baseSettings.GetSkipCharacters();
+		std::unordered_set<char> const & stopCharacters = baseSettings.GetStopCharacters();
+		std::unordered_set<char> const & skipCharacters = baseSettings.GetSkipCharacters();
 		ReadVectorMethod readVectorMethod = baseSettings.GetReadMethod();
 		size_t readLimit = baseSettings.GetReadLimit();
 
@@ -231,13 +231,13 @@ public:
 		{
 			return false;
 		}
-		std::unordered_set<wchar_t> const & stopCharacters = matrixSettings.GetBaseSettings().GetStopCharacters();
+		std::unordered_set<char> const & stopCharacters = matrixSettings.GetBaseSettings().GetStopCharacters();
 		if (FindDelimiter(stopCharacters))
 		{
 			return false;
 		}
 
-		std::unordered_set<wchar_t> const & skipCharacters = matrixSettings.GetBaseSettings().GetSkipCharacters();
+		std::unordered_set<char> const & skipCharacters = matrixSettings.GetBaseSettings().GetSkipCharacters();
 		SkipCharacters(skipCharacters);
 
 		size_t readLimit = matrixSettings.GetBaseSettings().GetReadLimit();
@@ -269,18 +269,18 @@ public:
 	}
 
 	bool Scan(
-		std::vector<std::wstring> const & delimiters,
+		std::vector<std::string> const & delimiters,
 		StreamString & scannedStreamString,
 		StreamString & delimiterStreamString)
 	{
-		StreamString possibleScannedStreamString(L"", m_position);
+		StreamString possibleScannedStreamString("", m_position);
 		StreamString possibleDelimiterStreamString;
 		while (!IsEndOfStream())
 		{
 			if (FindDelimiter(delimiters, possibleDelimiterStreamString.string))
 			{
 				possibleDelimiterStreamString.position = m_position;
-				SkipArguments<wchar_t>(possibleDelimiterStreamString.string.length());
+				SkipArguments<char>(possibleDelimiterStreamString.string.length());
 				break;
 			}
 			else
@@ -302,8 +302,8 @@ private:
 	static int const ENDL_SYMBOL_CODE_CR = 13;
 
 	std::string m_fileName;
-	std::wifstream m_inputFile;
-	std::wistream & m_is = m_inputFile;
+	std::ifstream m_inputFile;
+	std::istream & m_is = m_inputFile;
 
 	StreamPosition m_position;
 
@@ -339,7 +339,7 @@ private:
 		if (IsEndOfStream())
 		{
 			m_is.clear();
-			m_is.seekg(0, std::wistream::end);
+			m_is.seekg(0, std::istream::end);
 		}
 		long afterReadingPosition = m_is.tellg();
 		long readLength = afterReadingPosition - beforeReadingPosition;
@@ -354,7 +354,7 @@ private:
 		return result;
 	}
 
-	bool ReadArgumentFromStream(bool readEndOfLine, wchar_t & arg)
+	bool ReadArgumentFromStream(bool readEndOfLine, char & arg)
 	{
 		return ReadChar(arg, readEndOfLine);
 	}
@@ -461,19 +461,19 @@ private:
 		}
 	}
 
-	bool FindDelimiter(std::unordered_set<wchar_t> const & delimiters)
+	bool FindDelimiter(std::unordered_set<char> const & delimiters)
 	{
-		wchar_t delimiter;
+		char delimiter;
 		return FindDelimiter(delimiters, delimiter);
 	}
 
-	bool FindDelimiter(std::unordered_set<wchar_t> const & delimiters, wchar_t & foundDelimiter)
+	bool FindDelimiter(std::unordered_set<char> const & delimiters, char & foundDelimiter)
 	{
 		if (delimiters.empty())
 		{
 			return false;
 		}
-		wchar_t nextCharacter;
+		char nextCharacter;
 		if (!GetNextCharacter(nextCharacter) || delimiters.find(nextCharacter) == delimiters.end())
 		{
 			return false;
@@ -482,19 +482,19 @@ private:
 		return true;
 	}
 
-	bool FindDelimiter(std::vector<std::wstring> const & delimiters)
+	bool FindDelimiter(std::vector<std::string> const & delimiters)
 	{
-		std::wstring delimiter;
+		std::string delimiter;
 		return FindDelimiter(delimiters, delimiter);
 	}
 
-	bool FindDelimiter(std::vector<std::wstring> const & delimiters, std::wstring & resultDelimiter)
+	bool FindDelimiter(std::vector<std::string> const & delimiters, std::string & resultDelimiter)
 	{
 		bool result = false;
 		StreamPosition savedPosition = m_position;
-		for (std::wstring const & delimiter : delimiters)
+		for (std::string const & delimiter : delimiters)
 		{
-			std::wstring possibleDelimiter;
+			std::string possibleDelimiter;
 			if (ReadString(delimiter.length(), possibleDelimiter) && possibleDelimiter == delimiter)
 			{
 				if (IsEndOfStream())
@@ -521,9 +521,9 @@ private:
 		return result;
 	}
 
-	bool ReadCharToString(std::wstring & str, bool readEndOfLine = true)
+	bool ReadCharToString(std::string & str, bool readEndOfLine = true)
 	{
-		wchar_t ch;
+		char ch;
 		if (ReadChar(ch, readEndOfLine))
 		{
 			str.push_back(ch);
@@ -534,11 +534,11 @@ private:
 
 	bool ReadChar(bool readEndOfLine = true)
 	{
-		wchar_t ch;
+		char ch;
 		return ReadChar(ch, readEndOfLine);
 	}
 
-	bool ReadChar(wchar_t & ch, bool readEndOfLine = true)
+	bool ReadChar(char & ch, bool readEndOfLine = true)
 	{
 		if (readEndOfLine && ReadEndOfLine(ch))
 		{
@@ -552,9 +552,9 @@ private:
 		return false;
 	}
 
-	bool ReadString(size_t const length, std::wstring & result)
+	bool ReadString(size_t const length, std::string & result)
 	{
-		std::wstring possibleResult;
+		std::string possibleResult;
 		while (possibleResult.length() < length && ReadCharToString(possibleResult, true))
 		{
 		}
@@ -574,11 +574,11 @@ private:
 
 	bool ReadEndOfLine()
 	{
-		wchar_t ch;
+		char ch;
 		return ReadEndOfLine(ch);
 	}
 
-	bool ReadEndOfLine(wchar_t & endOfLine)
+	bool ReadEndOfLine(char & endOfLine)
 	{
 		int nextCharacterCode = m_is.peek();
 		if (nextCharacterCode == ENDL_SYMBOL_CODE_CR)
@@ -635,7 +635,7 @@ private:
 			skippedCount = 0;
 		}
 
-		wchar_t nextCharacter;
+		char nextCharacter;
 		while (GetNextCharacter(nextCharacter) && nextCharacter == ' ' && ReadChar())
 		{
 			result = true;

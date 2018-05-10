@@ -28,12 +28,12 @@ BaseSettings & BaseSettings::operator=(BaseSettings && right) noexcept
 	return *this;
 }
 
-std::unordered_set<wchar_t> const & BaseSettings::GetSkipCharacters() const
+std::unordered_set<char> const & BaseSettings::GetSkipCharacters() const
 {
 	return m_skipCharacters;
 }
 
-std::unordered_set<wchar_t> const & BaseSettings::GetStopCharacters() const
+std::unordered_set<char> const & BaseSettings::GetStopCharacters() const
 {
 	return m_stopCharacters;
 }
@@ -53,13 +53,13 @@ bool BaseSettings::GetReadEndOfLine() const
 	return m_readEndOfLine;
 }
 
-BaseSettingsBuilder & BaseSettingsBuilder::SetSkipCharacters(std::unordered_set<wchar_t> skipCharacters)
+BaseSettingsBuilder & BaseSettingsBuilder::SetSkipCharacters(std::unordered_set<char> skipCharacters)
 {
 	m_baseSettings.m_skipCharacters = std::move(skipCharacters);
 	return *this;
 }
 
-BaseSettingsBuilder & BaseSettingsBuilder::SetStopCharacters(std::unordered_set<wchar_t> stopCharacters)
+BaseSettingsBuilder & BaseSettingsBuilder::SetStopCharacters(std::unordered_set<char> stopCharacters)
 {
 	m_baseSettings.m_stopCharacters = std::move(stopCharacters);
 	return *this;
