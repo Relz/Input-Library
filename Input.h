@@ -25,6 +25,7 @@ public:
 		{
 			throw std::invalid_argument("Stream is empty");
 		}
+		Init();
 	}
 
 	explicit Input(std::string fileName)
@@ -39,6 +40,7 @@ public:
 		{
 			throw std::invalid_argument("File \"" + m_fileName + "\" is empty");
 		}
+		Init();
 	}
 
 	std::string const & GetFileName() const
@@ -305,6 +307,12 @@ private:
 
 	StreamPosition m_position;
 
+	void Init()
+	{
+		std::locale::global(std::locale("en_US.UTF-8"));
+		m_inputFile.imbue(std::locale("en_US.UTF-8"));
+	}
+
 	template<typename T>
 	bool ReadArgumentFromStream(bool readEndOfLine, T & arg)
 	{
@@ -331,7 +339,7 @@ private:
 		if (IsEndOfStream())
 		{
 			m_is.clear();
-			m_is.seekg(0, std::ios::end);
+			m_is.seekg(0, std::wistream::end);
 		}
 		long afterReadingPosition = m_is.tellg();
 		long readLength = afterReadingPosition - beforeReadingPosition;
@@ -341,7 +349,7 @@ private:
 		}
 		else
 		{
-			m_is.seekg(beforeReadingPosition, std::ios::beg);
+			m_is.seekg(beforeReadingPosition);
 		}
 		return result;
 	}
@@ -493,7 +501,8 @@ private:
 				{
 					m_is.clear();
 				}
-				m_is.seekg(-possibleDelimiter.length(), m_is.cur);
+				long currentPosition = m_is.tellg();
+				m_is.seekg(currentPosition - possibleDelimiter.length());
 				resultDelimiter = std::move(possibleDelimiter);
 				result = true;
 				break;
@@ -504,7 +513,8 @@ private:
 				{
 					m_is.clear();
 				}
-				m_is.seekg(-possibleDelimiter.length(), m_is.cur);
+				long currentPosition = m_is.tellg();
+				m_is.seekg(currentPosition - possibleDelimiter.length());
 			}
 		}
 		m_position = savedPosition;
@@ -557,7 +567,8 @@ private:
 		{
 			m_is.clear();
 		}
-		m_is.seekg(-possibleResult.length(), m_is.cur);
+		long currentPosition = m_is.tellg();
+		m_is.seekg(currentPosition - possibleResult.length());
 		return false;
 	}
 
@@ -605,7 +616,7 @@ private:
 		{
 			long afterReadingPosition = m_is.tellg();
 			m_position.DecreaseColumn(afterReadingPosition - beforeReadingPosition);
-			m_is.seekg(beforeReadingPosition, std::ios::beg);
+			m_is.seekg(beforeReadingPosition);
 		}
 		return isReadingSucceeded && isVectorPushingSucceeded;
 	}
