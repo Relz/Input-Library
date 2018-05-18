@@ -19,6 +19,8 @@ SET(SOURCE_FILES
 
 ADD_LIBRARY(InputLibrary SHARED ${SOURCE_FILES})
 
-ADD_SUBDIRECTORY(StreamStringLibrary)
+IF (NOT TARGET StreamStringLibrary)
+	ADD_SUBDIRECTORY(StreamStringLibrary)
+ENDIF ()
 
 TARGET_LINK_LIBRARIES(InputLibrary StreamStringLibrary)
