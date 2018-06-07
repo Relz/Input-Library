@@ -395,7 +395,7 @@ private:
 			{
 				return false;
 			}
-			elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
+			elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules[elem];
 		}
 		BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 		return true;
@@ -414,8 +414,7 @@ private:
 			{
 				return false;
 			}
-			TVectorElement elemToPush =
-				rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
+			TVectorElement elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules[elem];
 			BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 			return true;
 		}

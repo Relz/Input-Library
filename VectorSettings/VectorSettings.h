@@ -69,4 +69,4 @@ private:
 	VectorSettings<TVectorElement, TReadElement> m_vectorSettings;
 };
 
-#endif //PROJECT_VECTORSETTINGS_H
+#endif
