@@ -168,7 +168,7 @@ public:
 		{
 			readString.clear();
 		}
-		while (!FindDelimiter(characters) && ReadCharToString(readString))
+		while (!FindDelimiter(characters) && ReadCharToString(readString, true))
 		{
 		}
 		return !IsEndOfStream();
@@ -197,19 +197,12 @@ public:
 		}
 
 		BaseSettings const & baseSettings = settings.GetBaseSettings();
-		std::unordered_set<char> const & stopCharacters = baseSettings.GetStopCharacters();
-		std::unordered_set<char> const & skipCharacters = baseSettings.GetSkipCharacters();
 		ReadVectorMethod readVectorMethod = baseSettings.GetReadMethod();
 		size_t readLimit = baseSettings.GetReadLimit();
 
-		SkipCharacters(skipCharacters);
-
 		std::vector<TVectorElement> possibleVect;
-		while (possibleVect.size() != readLimit
-			&& !FindDelimiter(stopCharacters)
-			&& ReadArgumentToVector(possibleVect, settings))
+		while (possibleVect.size() != readLimit && ReadArgumentToVector(possibleVect, settings))
 		{
-			SkipCharacters(skipCharacters);
 		}
 
 		bool result = !possibleVect.empty();
@@ -231,23 +224,13 @@ public:
 		{
 			return false;
 		}
-		std::unordered_set<char> const & stopCharacters = matrixSettings.GetBaseSettings().GetStopCharacters();
-		if (FindDelimiter(stopCharacters))
-		{
-			return false;
-		}
-
-		std::unordered_set<char> const & skipCharacters = matrixSettings.GetBaseSettings().GetSkipCharacters();
-		SkipCharacters(skipCharacters);
 
 		size_t readLimit = matrixSettings.GetBaseSettings().GetReadLimit();
 		ReadVectorMethod readVectorMethod = matrixSettings.GetBaseSettings().GetReadMethod();
 
 		std::vector<std::vector<TVectorElement>> possibleMatrix;
-		while ((possibleMatrix.size() != readLimit || readLimit == SIZE_MAX)
-			&& !FindDelimiter(stopCharacters))
+		while ((possibleMatrix.size() != readLimit || readLimit == SIZE_MAX))
 		{
-			SkipCharacters(skipCharacters);
 			BasePush(possibleMatrix, std::vector<TVectorElement>(), readVectorMethod);
 			std::vector<TVectorElement> & endVect = possibleMatrix[GetEndIndex(possibleMatrix, readVectorMethod)];
 			if (!ReadVector(endVect, vectorSettings))
@@ -395,7 +378,7 @@ private:
 			{
 				return false;
 			}
-			elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules[elem];
+			elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
 		}
 		BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 		return true;
@@ -414,7 +397,7 @@ private:
 			{
 				return false;
 			}
-			TVectorElement elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules[elem];
+			TVectorElement elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
 			BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
 			return true;
 		}
@@ -579,34 +562,35 @@ private:
 
 	bool ReadEndOfLine(char & endOfLine)
 	{
+		bool endOfLineFound = false;
 		int nextCharacterCode = m_is.peek();
 		if (nextCharacterCode == ENDL_SYMBOL_CODE_CR)
 		{
 			m_is.get(endOfLine);
-			m_position.IncreaseLine();
-			m_position.ResetColumn();
-			nextCharacterCode = m_is.peek();
-			if (nextCharacterCode == ENDL_SYMBOL_CODE_LF)
+			if (m_is.peek() == ENDL_SYMBOL_CODE_LF)
 			{
 				m_is.get(endOfLine);
 			}
-			return true;
+			endOfLineFound = true;
 		}
 		else if (nextCharacterCode == ENDL_SYMBOL_CODE_LF)
 		{
 			m_is.get(endOfLine);
+			endOfLineFound = true;
+		}
+		if (endOfLineFound)
+		{
 			m_position.IncreaseLine();
 			m_position.ResetColumn();
-			return true;
 		}
-		return false;
+		return endOfLineFound;
 	}
 
 	template<typename TVectorElement, typename TReadElement>
 	bool ReadArgumentToVector(
 		std::vector<TVectorElement> & vect, VectorSettings<TVectorElement, TReadElement> const & settings)
 	{
-		bool readEndOfLine = settings.GetBaseSettings().GetReadEndOfLine();
+		bool readEndOfLine = settings.GetReadEndOfLine();
 		TReadElement elem;
 		long beforeReadingPosition = m_is.tellg();
 		bool isReadingSucceeded = ReadArgumentFromStream(readEndOfLine, elem);

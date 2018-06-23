@@ -20,7 +20,12 @@ public:
 		return m_baseSettings;
 	}
 
-	std::unordered_map<TReadElement, TVectorElement> GetRules() const
+	bool GetReadEndOfLine() const
+	{
+		return m_readEndOfLine;
+	}
+
+	std::unordered_map<TReadElement, TVectorElement> const & GetRules() const
 	{
 		return m_rules;
 	}
@@ -37,6 +42,7 @@ public:
 
 private:
 	BaseSettings m_baseSettings;
+	bool m_readEndOfLine = true;
 	std::unordered_map<TReadElement, TVectorElement> m_rules;
 	bool m_stopIfNoRule = true;
 	TVectorElement m_defaultElement;
@@ -47,6 +53,12 @@ class VectorSettingsBuilder
 {
 public:
 	VectorSettingsBuilder() = default;
+
+	VectorSettingsBuilder & SetReadEndOfLine(bool readEndOfLine)
+	{
+		m_vectorSettings.m_readEndOfLine = readEndOfLine;
+		return *this;
+	}
 
 	VectorSettingsBuilder & SetRules(
 		std::unordered_map<TReadElement,TVectorElement> rules,
@@ -59,9 +71,9 @@ public:
 		return *this;
 	}
 
-	VectorSettings<TVectorElement, TReadElement> const & Build(BaseSettings const & baseSettings = BaseSettings())
+	VectorSettings<TVectorElement, TReadElement> Build(BaseSettings baseSettings = BaseSettings())
 	{
-		m_vectorSettings.m_baseSettings = baseSettings;
+		m_vectorSettings.m_baseSettings = std::move(baseSettings);
 		return m_vectorSettings;
 	}
 
