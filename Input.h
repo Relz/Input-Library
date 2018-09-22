@@ -1,11 +1,7 @@
 ﻿#ifndef INPUTLIBRARY_INPUT_H
 #define INPUTLIBRARY_INPUT_H
 
-#include "BaseSettings/BaseSettings.h"
-#include "MatrixSettings/MatrixSettings.h"
-#include "ReadVectorMethod/ReadVectorMethod.h"
 #include "StreamStringLibrary/StreamString.h"
-#include "VectorSettings/VectorSettings.h"
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -18,6 +14,23 @@
 class Input
 {
 public:
+	template<typename TVectorElement, typename TReadElement = TVectorElement>
+	static bool EmplaceBackElement(std::vector<TVectorElement> & vector, TReadElement & element)
+	{
+		vector.emplace_back(element);
+		return true;
+	}
+
+	template<typename TVectorElement, typename TReadElement = TVectorElement>
+	static bool EmplaceBackVectorIfNotEmpty(std::vector<std::vector<TVectorElement>> & matrix, std::vector<TReadElement> & vector)
+	{
+		if (vector.empty())
+		{
+			return false;
+		}
+		return EmplaceBackElement(matrix, vector);
+	}
+
 	explicit Input(std::istream & is)
 		: m_is(is)
 	{
@@ -186,67 +199,66 @@ public:
 		return !IsEndOfStream();
 	}
 
-	template<typename TVectorElement, typename TReadElement = TVectorElement>
+	template<
+		typename TVectorElement,
+		typename TReadElement = TVectorElement,
+		typename ForEachElementFunctor = std::function<bool(std::vector<TVectorElement> &, TReadElement &)>
+	>
 	bool ReadVector(
-		std::vector<TVectorElement> & vect,
-		VectorSettings<TVectorElement, TReadElement> const & settings = VectorSettings<TVectorElement, TReadElement>())
+		std::vector<TVectorElement> & vector,
+		bool readEndOfLine = false,
+		ForEachElementFunctor forEachReadElement = &EmplaceBackElement<TVectorElement, TReadElement>
+	)
 	{
 		if (IsEndOfStream())
 		{
 			return false;
 		}
 
-		BaseSettings const & baseSettings = settings.GetBaseSettings();
-		ReadVectorMethod readVectorMethod = baseSettings.GetReadMethod();
-		size_t readLimit = baseSettings.GetReadLimit();
-
-		std::vector<TVectorElement> possibleVect;
-		while (possibleVect.size() != readLimit && ReadArgumentToVector(possibleVect, settings))
+		bool result = false;
+		while (ReadArgumentToVector(vector, readEndOfLine, forEachReadElement))
 		{
+			result = true;
 		}
-
-		bool result = !possibleVect.empty();
-
-		vect.insert(
-			GetEndIterator(vect, readVectorMethod),
-			std::make_move_iterator(possibleVect.begin()), std::make_move_iterator(possibleVect.end()));
 
 		return result;
 	}
 
-	template<typename TVectorElement, typename TReadElement = TVectorElement>
+	template<
+		typename TVectorElement,
+		typename TReadElement = TVectorElement,
+		typename ForEachElementFunctor = std::function<bool(std::vector<TVectorElement> &, TReadElement &)>,
+		typename ForEachVectorFunctor = std::function<bool(std::vector<std::vector<TVectorElement>> &, std::vector<TReadElement> &)>
+	>
 	bool ReadMatrix(
 		std::vector<std::vector<TVectorElement>> & matrix,
-		MatrixSettings const & matrixSettings = MatrixSettings(),
-		VectorSettings<TVectorElement, TReadElement> const & vectorSettings = VectorSettings<TVectorElement, TReadElement>())
+		bool readEndOfLine = false,
+		ForEachElementFunctor forEachReadElement = &EmplaceBackElement<TVectorElement, TReadElement>,
+		ForEachVectorFunctor forEachReadVector = &EmplaceBackVectorIfNotEmpty<TVectorElement, TReadElement>
+	)
 	{
 		if (IsEndOfStream())
 		{
 			return false;
 		}
 
-		size_t readLimit = matrixSettings.GetBaseSettings().GetReadLimit();
-		ReadVectorMethod readVectorMethod = matrixSettings.GetBaseSettings().GetReadMethod();
-
-		std::vector<std::vector<TVectorElement>> possibleMatrix;
-		while ((possibleMatrix.size() != readLimit || readLimit == SIZE_MAX))
+		bool result = false;
+		while (true)
 		{
-			BasePush(possibleMatrix, std::vector<TVectorElement>(), readVectorMethod);
-			std::vector<TVectorElement> & endVect = possibleMatrix[GetEndIndex(possibleMatrix, readVectorMethod)];
-			if (!ReadVector(endVect, vectorSettings))
+			std::vector<TVectorElement> vector;
+			while (ReadArgumentToVector(vector, readEndOfLine, forEachReadElement))
 			{
-				VectorPop(possibleMatrix, readVectorMethod);
+			}
+			if (forEachReadVector(matrix, vector))
+			{
+				result = true;
+				ReadEndOfLine();
+			}
+			else
+			{
 				break;
 			}
-			ReadEndOfLine();
 		}
-
-		bool result = !possibleMatrix.empty();
-
-		matrix.insert(
-			GetEndIterator(matrix, readVectorMethod),
-			std::make_move_iterator(possibleMatrix.begin()),
-			std::make_move_iterator(possibleMatrix.end()));
 
 		return result;
 	}
@@ -254,7 +266,8 @@ public:
 	bool Scan(
 		std::vector<std::string> const & delimiters,
 		StreamString & scannedStreamString,
-		StreamString & delimiterStreamString)
+		StreamString & delimiterStreamString
+	)
 	{
 		StreamString possibleScannedStreamString("", m_position);
 		StreamString possibleDelimiterStreamString;
@@ -351,96 +364,6 @@ private:
 	bool ReadArgumentsFromStream(bool readEndOfLine, T & arg, Targs &... args)
 	{
 		return ReadArgumentFromStream(readEndOfLine, arg) && ReadArgumentsFromStream(readEndOfLine, args...);
-	}
-
-	template<typename T>
-	void BasePush(std::vector<T> & vect, T const & elem, ReadVectorMethod const readVectorMethod)
-	{
-		if (readVectorMethod == ReadVectorMethod::PUSH_BACK)
-		{
-			vect.emplace_back(elem);
-		}
-		else // if (readVectorMethod == PUSH_FRONT)
-		{
-			vect.insert(vect.begin(), elem);
-		}
-	}
-
-	template<typename T>
-	bool VectorPush(std::vector<T> & vect, T const & elem, VectorSettings<T, T> const & settings = VectorSettings<T, T>())
-	{
-		std::unordered_map<T, T> const & rules = settings.GetRules();
-
-		T elemToPush = elem;
-		if (!rules.empty())
-		{
-			if (settings.DoesStopIfNoRule() && rules.find(elem) == rules.end())
-			{
-				return false;
-			}
-			elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
-		}
-		BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
-		return true;
-	}
-
-	template<typename TVectorElement, typename TReadElement = TVectorElement>
-	bool VectorPush(
-		std::vector<TVectorElement> & vect,
-		TReadElement const & elem,
-		VectorSettings<TVectorElement, TReadElement> const & settings = VectorSettings<TVectorElement, TReadElement>())
-	{
-		std::unordered_map<TReadElement, TVectorElement> const & rules = settings.GetRules();
-		if (!rules.empty())
-		{
-			if (settings.DoesStopIfNoRule() && rules.find(elem) == rules.end())
-			{
-				return false;
-			}
-			TVectorElement elemToPush = rules.find(elem) == rules.end() ? settings.GetDefaultElement() : rules.at(elem);
-			BasePush(vect, elemToPush, settings.GetBaseSettings().GetReadMethod());
-			return true;
-		}
-		return false;
-	}
-
-	template<typename T>
-	void VectorPop(std::vector<T> & vect, ReadVectorMethod const readVectorMethod)
-	{
-		if (readVectorMethod == ReadVectorMethod::PUSH_BACK)
-		{
-			vect.pop_back();
-		}
-		else // if (readVectorMethod == PUSH_FRONT)
-		{
-			vect.erase(vect.begin());
-		}
-	}
-
-	template<typename T>
-	size_t GetEndIndex(std::vector<T> & vect, ReadVectorMethod const readVectorMethod)
-	{
-		if (readVectorMethod == ReadVectorMethod::PUSH_BACK)
-		{
-			return vect.size() - 1;
-		}
-		else // if (readVectorMethod == PUSH_FRONT)
-		{
-			return 0;
-		}
-	}
-
-	template<typename T>
-	auto GetEndIterator(std::vector<T> const & vect, ReadVectorMethod const readVectorMethod)
-	{
-		if (readVectorMethod == ReadVectorMethod::PUSH_BACK)
-		{
-			return vect.end();
-		}
-		else // if (readVectorMethod == PUSH_FRONT)
-		{
-			return vect.begin();
-		}
 	}
 
 	bool FindDelimiter(std::unordered_set<char> const & delimiters)
@@ -586,22 +509,21 @@ private:
 		return endOfLineFound;
 	}
 
-	template<typename TVectorElement, typename TReadElement>
+	template<
+		typename TVectorElement,
+		typename TReadElement = TVectorElement,
+		typename ForEachElementFunctor = std::function<bool(std::vector<TVectorElement> &, TReadElement &)>
+	>
 	bool ReadArgumentToVector(
-		std::vector<TVectorElement> & vect, VectorSettings<TVectorElement, TReadElement> const & settings)
+		std::vector<TVectorElement> & vector,
+		bool readEndOfLine,
+		ForEachElementFunctor forEachReadElement = &EmplaceBackElement<TVectorElement, TReadElement>
+	)
 	{
-		bool readEndOfLine = settings.GetReadEndOfLine();
 		TReadElement elem;
-		long beforeReadingPosition = m_is.tellg();
 		bool isReadingSucceeded = ReadArgumentFromStream(readEndOfLine, elem);
-		bool isVectorPushingSucceeded = isReadingSucceeded && VectorPush(vect, elem, settings);
-		if (isReadingSucceeded && !isVectorPushingSucceeded)
-		{
-			long afterReadingPosition = m_is.tellg();
-			m_position.DecreaseColumn(afterReadingPosition - beforeReadingPosition);
-			m_is.seekg(beforeReadingPosition);
-		}
-		return isReadingSucceeded && isVectorPushingSucceeded;
+		bool continueReading = isReadingSucceeded && forEachReadElement(vector, elem);
+		return isReadingSucceeded && continueReading;
 	}
 
 	bool SkipWhitespaces(bool add = false)
