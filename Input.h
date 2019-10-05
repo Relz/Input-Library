@@ -61,9 +61,19 @@ public:
 		return m_fileName;
 	}
 
+	size_t GetSize() const
+	{
+		return m_size;
+	}
+
 	StreamPosition const & GetPosition() const
 	{
 		return m_position;
+	}
+
+	size_t GetCharPosition() const
+	{
+		return m_is.tellg();
 	}
 
 	bool GetNextCharacter(char & nextCharacter) const
@@ -301,12 +311,22 @@ private:
 	std::ifstream m_inputFile;
 	std::istream & m_is = m_inputFile;
 
+	size_t m_size;
+
 	StreamPosition m_position;
+
+	void InitSize()
+	{
+		m_is.seekg(0, std::ios::end);
+		m_size = GetCharPosition();
+		m_is.seekg(0, std::ios::beg);
+	}
 
 	void Init()
 	{
 		std::locale::global(std::locale("en_US.UTF-8"));
 		m_inputFile.imbue(std::locale("en_US.UTF-8"));
+		InitSize();
 	}
 
 	template<typename T>
@@ -327,7 +347,7 @@ private:
 		}
 
 		bool result = true;
-		long beforeReadingPosition = m_is.tellg();
+		long beforeReadingPosition = GetCharPosition();
 		if (!(m_is >> arg))
 		{
 			result = false;
@@ -337,7 +357,7 @@ private:
 			m_is.clear();
 			m_is.seekg(0, std::istream::end);
 		}
-		long afterReadingPosition = m_is.tellg();
+		long afterReadingPosition = GetCharPosition();
 		long readLength = afterReadingPosition - beforeReadingPosition;
 		if (result)
 		{
@@ -406,7 +426,7 @@ private:
 				{
 					m_is.clear();
 				}
-				long currentPosition = m_is.tellg();
+				long currentPosition = GetCharPosition();
 				m_is.seekg(currentPosition - possibleDelimiter.length());
 				resultDelimiter = std::move(possibleDelimiter);
 				result = true;
@@ -418,7 +438,7 @@ private:
 				{
 					m_is.clear();
 				}
-				long currentPosition = m_is.tellg();
+				long currentPosition = GetCharPosition();
 				m_is.seekg(currentPosition - possibleDelimiter.length());
 			}
 		}
@@ -454,6 +474,11 @@ private:
 			m_position.IncreaseColumn();
 			return true;
 		}
+		if (IsEndOfStream())
+		{
+			m_is.clear();
+			m_is.seekg(0, std::istream::end);
+		}
 		return false;
 	}
 
@@ -472,7 +497,7 @@ private:
 		{
 			m_is.clear();
 		}
-		long currentPosition = m_is.tellg();
+		long currentPosition = GetCharPosition();
 		m_is.seekg(currentPosition - possibleResult.length());
 		return false;
 	}

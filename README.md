@@ -46,17 +46,42 @@ cout << input.GetFileName() << endl;
 fileName.txt
 ```
 
+#### GetSize
+**Сигнатура**:
+```c++
+size_t GetSize() const
+```
+
+**Описание**: метод возвращает размер потока.
+
+**Входные параметры**: метод не принимает параметры.
+
+**Возвращаемое значение**: размер потока.
+
+**Пример**:
+```c++
+string const fileName = "not_empty_file";
+ofstream of(fileName, ofstream::trunc);
+of.write("0", 1);
+of.close();
+cout << Input(fileName).GetSize() << endl;
+```
+Вывод:
+```
+1
+```
+
 #### GetPosition
 **Сигнатура**:
 ```c++
 StreamPosition const & GetPosition() const
 ```
 
-**Описание**: метод возвращает текущую позицию в потоке. Номер строки и столбца начинается с единицы.
+**Описание**: метод возвращает текущую позицию строки и столбца в потоке. Номер строки и столбца начинаются с единицы.
 
 **Входные параметры**: метод не принимает параметры.
 
-**Возвращаемое значение**: текущая позиция в потоке.
+**Возвращаемое значение**: текущая позиция строки и столбца в потоке.
 
 **Пример**:
 ```c++
@@ -67,6 +92,38 @@ cout << input.GetPosition().GetLine() << " " << input.GetPosition().GetColumn() 
 Вывод:
 ```
 1 1
+```
+
+#### GetCharPosition
+**Сигнатура**:
+```c++
+size_t GetCharPosition() const
+```
+
+**Описание**: метод возвращает текущую позицию в потоке.
+
+**Входные параметры**: метод не принимает параметры.
+
+**Возвращаемое значение**: текущая позиция в потоке.
+
+**Пример**:
+```c++
+string const fileName = "not_empty_file";
+ofstream of(fileName, ofstream::trunc);
+of.write("0", 1);
+of.close();
+Input input(fileName);
+cout << input.GetCharPosition() << endl;
+input.SkipArgument<char>();
+cout << input.GetCharPosition() << endl;
+input.SkipArgument<char>();
+cout << input.GetCharPosition() << endl;
+```
+Вывод:
+```
+0
+1
+1
 ```
 
 #### GetNextCharacter
